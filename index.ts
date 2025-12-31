@@ -32,8 +32,6 @@ const port = 3000;
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-app.use(express.static("static"));
-
 app.get("/", (req: Request, res: Response) => {
   res.send("ну и что тебе тут понадобилось?");
 });
