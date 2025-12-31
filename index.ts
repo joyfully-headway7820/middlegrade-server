@@ -7,7 +7,6 @@ const app: Express = express();
 const jsonParser = bodyParser.json();
 const port = 3000;
 
-app.use(cors());
 app.use(express.static("static"));
 
 app.get("/", (req: Request, res: Response) => {
@@ -49,7 +48,7 @@ app.post("/auth", jsonParser, async (req: Request, res: Response) => {
   }
 });
 
-app.get("/marks", cors(), async (req: Request, res: Response) => {
+app.get("/marks", async (req: Request, res: Response) => {
   try {
     const token = await checkToken(req.headers.authorization);
 
@@ -70,7 +69,7 @@ app.get("/marks", cors(), async (req: Request, res: Response) => {
   }
 });
 
-app.get("/exams", cors(), async (req: Request, res: Response) => {
+app.get("/exams", async (req: Request, res: Response) => {
   try {
     const token = await checkToken(req.headers.authorization);
 
@@ -91,7 +90,7 @@ app.get("/exams", cors(), async (req: Request, res: Response) => {
   }
 });
 
-app.get("/schedule", cors(), async (req: Request, res: Response) => {
+app.get("/schedule", async (req: Request, res: Response) => {
   try {
     const token = await checkToken(req.headers.authorization);
     const monday = req.query.monday;
@@ -119,7 +118,7 @@ app.get("/schedule", cors(), async (req: Request, res: Response) => {
   }
 });
 
-app.get("/user", cors(), async (req: Request, res: Response) => {
+app.get("/user", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
 
   const response = await axios.get(
@@ -136,7 +135,7 @@ app.get("/user", cors(), async (req: Request, res: Response) => {
   res.send(response.data);
 });
 
-app.get("/group_history", cors(), async (req: Request, res: Response) => {
+app.get("/group_history", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
 
   const response = await axios.get(
@@ -153,7 +152,7 @@ app.get("/group_history", cors(), async (req: Request, res: Response) => {
   res.send(response.data);
 });
 
-app.get("/homework", cors(), async (req: Request, res: Response) => {
+app.get("/homework", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
   const groupId = req.query.group_id;
   const status = req.query.status;
@@ -173,7 +172,7 @@ app.get("/homework", cors(), async (req: Request, res: Response) => {
   res.send(response.data);
 });
 
-app.get("/labs", cors(), async (req: Request, res: Response) => {
+app.get("/labs", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
   const groupId = req.query.group_id;
   const status = req.query.status;
@@ -208,7 +207,7 @@ app.post(
   },
 );
 
-app.delete("/homework:id", cors(), async (req: Request, res: Response) => {
+app.delete("/homework:id", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
   const { id } = req.params;
 
