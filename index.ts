@@ -1,11 +1,16 @@
 import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import axios from "axios";
+
+const corsOptions: CorsOptions = {
+  origin: "*",
+};
 
 const app: Express = express();
 const jsonParser = bodyParser.json();
 const port = 3000;
+app.use(cors(corsOptions));
 
 app.use(express.static("static"));
 
@@ -192,20 +197,15 @@ app.get("/labs", async (req: Request, res: Response) => {
   res.send(response.data);
 });
 
-app.post(
-  "/homework",
-  cors(),
-  jsonParser,
-  async (req: Request, res: Response) => {
-    // const token = await checkToken(req.headers.authorization);
-    // const form = formidable({ multiples: true });
-    // form.parse(req, (err, fields, files) => {
-    //   console.log(fields);
-    //   console.log(files);
-    // TODO: разобраться, что оно возвращает
-    // });
-  },
-);
+app.post("/homework", jsonParser, async (req: Request, res: Response) => {
+  // const token = await checkToken(req.headers.authorization);
+  // const form = formidable({ multiples: true });
+  // form.parse(req, (err, fields, files) => {
+  //   console.log(fields);
+  //   console.log(files);
+  // TODO: разобраться, что оно возвращает
+  // });
+});
 
 app.delete("/homework:id", async (req: Request, res: Response) => {
   const token = await checkToken(req.headers.authorization);
