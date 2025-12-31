@@ -4,13 +4,33 @@ import cors, { CorsOptions } from "cors";
 import axios from "axios";
 
 const corsOptions: CorsOptions = {
-  origin: "*",
+  origin: (origin, callback) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(",")
+      : ["*"];
+
+    if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Content-Type", "Authorization"],
 };
 
 const app: Express = express();
 const jsonParser = bodyParser.json();
 const port = 3000;
+
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.static("static"));
 
@@ -39,7 +59,7 @@ app.post("/auth", jsonParser, async (req: Request, res: Response) => {
         headers: {
           Referer: "https://journal.top-academy.ru",
         },
-      },
+      }
     );
 
     if (!response) {
@@ -65,7 +85,7 @@ app.get("/marks", async (req: Request, res: Response) => {
           Referer: "https://journal.top-academy.ru",
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     res.send(response.data);
@@ -86,7 +106,7 @@ app.get("/exams", async (req: Request, res: Response) => {
           Referer: "https://journal.top-academy.ru",
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     res.send(response.data);
@@ -114,7 +134,7 @@ app.get("/schedule", async (req: Request, res: Response) => {
           Referer: "https://journal.top-academy.ru",
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     res.send(response.data);
@@ -134,7 +154,7 @@ app.get("/user", async (req: Request, res: Response) => {
         Referer: "https://journal.top-academy.ru",
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   res.send(response.data);
@@ -151,7 +171,7 @@ app.get("/group_history", async (req: Request, res: Response) => {
         Referer: "https://journal.top-academy.ru",
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   res.send(response.data);
@@ -171,7 +191,7 @@ app.get("/homework", async (req: Request, res: Response) => {
         Referer: "https://journal.top-academy.ru",
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   res.send(response.data);
@@ -191,7 +211,7 @@ app.get("/labs", async (req: Request, res: Response) => {
         Referer: "https://journal.top-academy.ru",
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   res.send(response.data);
@@ -220,7 +240,7 @@ app.delete("/homework:id", async (req: Request, res: Response) => {
         Referer: "https://journal.top-academy.ru",
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   res.send(response.data);
