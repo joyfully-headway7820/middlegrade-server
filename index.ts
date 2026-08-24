@@ -1,7 +1,8 @@
+import express from "express";
 import { PORT } from "./src/config";
-import { createApp } from "./src/app";
+import { createApp } from "./src/createApp";
 
-const app = createApp();
+const app: express.Express = createApp();
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
