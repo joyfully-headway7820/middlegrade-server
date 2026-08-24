@@ -1,3 +1,5 @@
+import { resolveSessionSecret } from "./sessionSecret";
+
 export const JOURNAL_API = "https://msapi.top-academy.ru/api/v2";
 
 export const JOURNAL_ORIGIN = "https://journal.top-academy.ru";
@@ -21,10 +23,7 @@ export const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-const secret = process.env.SESSION_SECRET;
-
-if (!secret && IS_PRODUCTION) {
-  throw new Error("SESSION_SECRET must be set in production");
-}
-
-export const SESSION_SECRET = secret ?? "insecure-development-secret";
+export const SESSION_SECRET = resolveSessionSecret(
+  process.env.SESSION_SECRET,
+  IS_PRODUCTION
+);
