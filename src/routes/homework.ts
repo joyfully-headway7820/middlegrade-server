@@ -1,11 +1,8 @@
 import { Router } from "express";
 import { asyncRoute, badRequest } from "../errors";
 import { journalRequest } from "../journal";
-import {
-  HomeworkListResponse,
-  HomeworkPage,
-  UserGroup,
-} from "../types";
+import { HomeworkListResponse, UserGroup } from "../types";
+import { toHomeworkPage } from "../utils/toHomeworkPage";
 
 export const homeworkRouter = Router();
 
@@ -16,18 +13,6 @@ export const homeworkRouter = Router();
 const STATUSES = new Set([1, 2, 3, 5, 6]);
 const ACTIVE_STATUS = 3;
 const TYPES = new Set([0, 1]);
-
-const toPage = (response: HomeworkListResponse, page: number): HomeworkPage => {
-  if (Array.isArray(response)) {
-    return { items: response, page, totalPages: 1 };
-  }
-
-  return {
-    items: response.data ?? [],
-    page: response._meta?.currentPage ?? page,
-    totalPages: response._meta?.totalPages ?? 1,
-  };
-};
 
 homeworkRouter.get(
   "/counts",
@@ -76,10 +61,15 @@ homeworkRouter.get(
       "/homework/operations/list",
       {
         method: "GET",
-        params: { page, status, type, group_id: groupId },
+        params: {
+          page,
+          status,
+          type,
+          group_id: groupId,
+        },
       }
     );
 
-    res.json(toPage(response, page));
+    res.json(toHomeworkPage(response, page));
   })
 );
