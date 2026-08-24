@@ -57,6 +57,7 @@ rewrite `/api/*` в `vercel.json`. Если развернуть прокси н
 | GET   | `/dashboard/performance`      | `dashboard/progress/academic-performance`      |
 | GET   | `/dashboard/attendance`       | `dashboard/progress/attendance-statistic`      |
 | GET   | `/dashboard/activity`         | `dashboard/progress/activity`                  |
+| GET   | `/dashboard/exams`            | `dashboard/info/future-exams`                  |
 | GET   | `/dashboard/charts/:kind`     | `dashboard/chart/{average-progress,attendance,progress}` |
 | GET   | `/dashboard/leaders/:scope`   | `dashboard/progress/leader-{group,stream}` + `-points` |
 | GET   | `/schedule/month`             | `schedule/operations/get-month`                |

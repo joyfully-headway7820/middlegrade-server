@@ -39,6 +39,19 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
+  "/exams",
+  asyncRoute(async (req, res) => {
+    res.json(
+      await journalRequest<unknown>(
+        req,
+        res,
+        "/dashboard/info/future-exams"
+      )
+    );
+  })
+);
+
+dashboardRouter.get(
   "/activity",
   asyncRoute(async (req, res) => {
     const [activity, translations] = await Promise.all([
