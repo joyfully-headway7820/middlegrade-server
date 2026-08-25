@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { asyncRoute, badRequest, HttpError } from "../errors";
 import { journalRequest } from "../journal";
+import { hydratePurchases } from "../utils/hydratePurchases";
 import {
   pageCountOf,
   toProduct,
@@ -16,6 +17,7 @@ export const marketRouter = Router();
 const PRODUCT = 0;
 const PROMO = 1;
 const MAX_PAGES = 20;
+const REJECTED_ORDER = 2;
 
 const BUY_ERRORS: Record<number, string> = {
   5000: "Недостаточно товара",
@@ -34,8 +36,8 @@ const mapItems = <T>(
     .map(map)
     .filter((item): item is T => item !== null);
 
-const uniqueById = (items: MarketProduct[]): MarketProduct[] => {
-  const byId = new Map<number, MarketProduct>();
+const uniqueById = <T extends { id: number }>(items: T[]): T[] => {
+  const byId = new Map<number, T>();
 
   for (const item of items) {
     if (!byId.has(item.id)) {
@@ -56,7 +58,7 @@ const collectPages = async <T>(
   const collected: T[] = [];
   let totalPages = 1;
 
-  for (let page = 1; page <= totalPages && page <= MAX_PAGES; page += 1) {
+  for (let page = 0; page < totalPages && page < MAX_PAGES; page += 1) {
     const raw = await journalRequest<unknown>(req, res, path, {
       method: "GET",
       params: { ...params, page },
@@ -64,7 +66,7 @@ const collectPages = async <T>(
     const batch = mapItems(raw, map);
     collected.push(...batch);
 
-    if (page === 1) {
+    if (page === 0) {
       totalPages = pageCountOf(totalCountOf(raw), batch.length);
     }
 
@@ -137,9 +139,10 @@ marketRouter.get(
     ]);
 
     const items = uniqueById([...products, ...promos]);
-    const orders = [...purchases].sort((left, right) =>
+    const listed = uniqueById(purchases).sort((left, right) =>
       (right.date ?? "").localeCompare(left.date ?? "")
     );
+    const orders = await hydratePurchases(req, res, listed);
 
     res.json({ items, purchases: orders });
   })
@@ -171,6 +174,37 @@ marketRouter.post(
           : new HttpError(502, "Journal API request failed");
 
       throw new HttpError(httpError.status, buyMessage(httpError), httpError.details);
+    }
+
+    res.json({ ok: true });
+  })
+);
+
+marketRouter.post(
+  "/cancel",
+  asyncRoute(async (req, res) => {
+    const orderId = Number(req.body?.orderId ?? req.body?.id);
+
+    if (!Number.isInteger(orderId) || orderId <= 0) {
+      throw badRequest("orderId обязателен");
+    }
+
+    try {
+      await journalRequest<unknown>(req, res, "/market/admin/order/set-status", {
+        method: "POST",
+        data: { id: orderId, status: REJECTED_ORDER },
+      });
+    } catch (error) {
+      const httpError =
+        error instanceof HttpError
+          ? error
+          : new HttpError(502, "Journal API request failed");
+      const message =
+        httpError.status === 403 || httpError.status === 404
+          ? "Нельзя отменить заказ"
+          : httpError.message;
+
+      throw new HttpError(httpError.status, message, httpError.details);
     }
 
     res.json({ ok: true });
