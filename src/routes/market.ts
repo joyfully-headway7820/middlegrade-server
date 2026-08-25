@@ -58,7 +58,7 @@ const collectPages = async <T>(
   const collected: T[] = [];
   let totalPages = 1;
 
-  for (let page = 0; page < totalPages && page < MAX_PAGES; page += 1) {
+  for (let page = 1; page <= totalPages && page <= MAX_PAGES; page += 1) {
     const raw = await journalRequest<unknown>(req, res, path, {
       method: "GET",
       params: { ...params, page },
@@ -66,7 +66,7 @@ const collectPages = async <T>(
     const batch = mapItems(raw, map);
     collected.push(...batch);
 
-    if (page === 0) {
+    if (page === 1) {
       totalPages = pageCountOf(totalCountOf(raw), batch.length);
     }
 
