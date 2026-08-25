@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { asyncRoute, badRequest, HttpError } from "../errors";
 import { journalRequest } from "../journal";
+import { hydratePurchases } from "../utils/hydratePurchases";
 import {
   pageCountOf,
   toProduct,
@@ -34,8 +35,8 @@ const mapItems = <T>(
     .map(map)
     .filter((item): item is T => item !== null);
 
-const uniqueById = (items: MarketProduct[]): MarketProduct[] => {
-  const byId = new Map<number, MarketProduct>();
+const uniqueById = <T extends { id: number }>(items: T[]): T[] => {
+  const byId = new Map<number, T>();
 
   for (const item of items) {
     if (!byId.has(item.id)) {
@@ -137,9 +138,10 @@ marketRouter.get(
     ]);
 
     const items = uniqueById([...products, ...promos]);
-    const orders = [...purchases].sort((left, right) =>
+    const listed = uniqueById(purchases).sort((left, right) =>
       (right.date ?? "").localeCompare(left.date ?? "")
     );
+    const orders = await hydratePurchases(req, res, listed);
 
     res.json({ items, purchases: orders });
   })
