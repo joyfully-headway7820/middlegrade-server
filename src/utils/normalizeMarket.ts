@@ -25,7 +25,6 @@ export type MarketPurchase = {
   date: string | null;
   photo: string | null;
   status: MarketOrderStatus;
-  cancellable: boolean;
   items: MarketPurchaseItem[];
 };
 
@@ -292,7 +291,6 @@ export const toPurchase = (value: unknown): MarketPurchase | null => {
       items[0]?.photo ??
       null,
     status,
-    cancellable: status === "new",
     items,
   };
 };

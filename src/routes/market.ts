@@ -17,7 +17,6 @@ export const marketRouter = Router();
 const PRODUCT = 0;
 const PROMO = 1;
 const MAX_PAGES = 20;
-const REJECTED_ORDER = 2;
 
 const BUY_ERRORS: Record<number, string> = {
   5000: "Недостаточно товара",
@@ -174,37 +173,6 @@ marketRouter.post(
           : new HttpError(502, "Journal API request failed");
 
       throw new HttpError(httpError.status, buyMessage(httpError), httpError.details);
-    }
-
-    res.json({ ok: true });
-  })
-);
-
-marketRouter.post(
-  "/cancel",
-  asyncRoute(async (req, res) => {
-    const orderId = Number(req.body?.orderId ?? req.body?.id);
-
-    if (!Number.isInteger(orderId) || orderId <= 0) {
-      throw badRequest("orderId обязателен");
-    }
-
-    try {
-      await journalRequest<unknown>(req, res, "/market/admin/order/set-status", {
-        method: "POST",
-        data: { id: orderId, status: REJECTED_ORDER },
-      });
-    } catch (error) {
-      const httpError =
-        error instanceof HttpError
-          ? error
-          : new HttpError(502, "Journal API request failed");
-      const message =
-        httpError.status === 403 || httpError.status === 404
-          ? "Нельзя отменить заказ"
-          : httpError.message;
-
-      throw new HttpError(httpError.status, message, httpError.details);
     }
 
     res.json({ ok: true });

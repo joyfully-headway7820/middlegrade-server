@@ -18,7 +18,6 @@ describe("toPurchase", () => {
       date: "2026-08-25 13:51:58",
       photo: null,
       status: "new",
-      cancellable: true,
       items: [],
     });
   });
@@ -56,7 +55,6 @@ describe("toPurchase", () => {
       date: "2026-08-25 13:51:58",
       photo,
       status: "new",
-      cancellable: true,
       items: [
         {
           id: 22,
