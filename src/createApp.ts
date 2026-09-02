@@ -9,6 +9,7 @@ import { homeworkRouter } from "./routes/homework";
 import { marketRouter } from "./routes/market";
 import { paymentRouter } from "./routes/misc";
 import { progressRouter } from "./routes/progress";
+import { evaluateLessonRouter } from "./routes/evaluateLesson";
 import { reviewsRouter } from "./routes/reviews";
 import { scheduleRouter } from "./routes/schedule";
 
@@ -46,6 +47,7 @@ export const createApp = (): Express => {
   app.use("/homework", homeworkRouter);
   app.use("/payment", paymentRouter);
   app.use("/reviews", reviewsRouter);
+  app.use("/feedback", evaluateLessonRouter);
   app.use("/market", marketRouter);
 
   app.use((_req, res) => {
