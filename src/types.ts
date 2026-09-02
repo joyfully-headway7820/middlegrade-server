@@ -239,6 +239,24 @@ export type StudentReview = {
   message: string;
 };
 
+export type EvaluateLessonQueueItem = {
+  key: string;
+  date_visit: string;
+  fio_teach: string;
+  spec_name: string;
+  teach_photo: string | null;
+};
+
+export type EvaluateLessonSubmitBody = {
+  key: string;
+  mark_teach: number;
+  mark_lesson: number;
+  comment_teach: string;
+  comment_lesson: string;
+  tags_teach: [];
+  tags_lesson: [];
+};
+
 export type HomeworkCount = {
   counter_type: number;
   counter: number;
