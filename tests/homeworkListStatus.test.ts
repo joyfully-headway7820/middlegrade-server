@@ -39,6 +39,12 @@ describe("parseHomeworkListStatus", () => {
     expectBadRequest(6);
     expectBadRequest("6");
     expectBadRequest(4);
+    expectBadRequest("4");
     expectBadRequest("foo");
+    expectBadRequest(" ");
+    expectBadRequest("3.0");
+    expectBadRequest("3e0");
+    expectBadRequest(null);
+    expectBadRequest([]);
   });
 });
