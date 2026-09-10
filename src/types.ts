@@ -5,6 +5,20 @@ export type UserGroup = {
   name: string;
 };
 
+export type HomeworkSpec = {
+  id: number;
+  name: string;
+  short_name: string;
+  subject_source: number;
+  subject_id: number;
+};
+
+export type HomeworkGroup = {
+  id: number;
+  name: string;
+  specs?: HomeworkSpec[];
+};
+
 export type GamingPoints = {
   new_gaming_point_types__id: number;
   points: number;

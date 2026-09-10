@@ -2,11 +2,12 @@ import { Router } from "express";
 import multer from "multer";
 import { asyncRoute, badRequest } from "../errors";
 import { journalRequest } from "../journal";
-import { HomeworkListResponse, UserGroup } from "../types";
+import { HomeworkGroup, HomeworkListResponse } from "../types";
 import { buildHomeworkCreateFormData } from "../utils/buildHomeworkCreateFormData";
 import { parseHomeworkCreateInput } from "../utils/parseHomeworkCreateInput";
 import { parseHomeworkDeleteId } from "../utils/parseHomeworkDeleteId";
 import { parseHomeworkListStatus } from "../utils/parseHomeworkListStatus";
+import { parseHomeworkListSubject } from "../utils/parseHomeworkListSubject";
 import { toHomeworkPage } from "../utils/toHomeworkPage";
 
 export const homeworkRouter = Router();
@@ -31,7 +32,7 @@ homeworkRouter.get(
   "/groups",
   asyncRoute(async (req, res) => {
     res.json(
-      await journalRequest<UserGroup[]>(req, res, "/homework/settings/group-history")
+      await journalRequest<HomeworkGroup[]>(req, res, "/homework/settings/group-history")
     );
   })
 );
@@ -48,6 +49,10 @@ homeworkRouter.get(
     }
 
     const status = parseHomeworkListStatus(req.query.status);
+    const subject = parseHomeworkListSubject(
+      req.query.subjectSource,
+      req.query.subjectId,
+    );
 
     if (!TYPES.has(type)) {
       throw badRequest("type должен быть 0 (ДЗ) или 1 (лабораторные)");
@@ -68,6 +73,7 @@ homeworkRouter.get(
           status,
           type,
           group_id: groupId,
+          ...subject,
         },
       }
     );
