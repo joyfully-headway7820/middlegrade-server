@@ -67,6 +67,8 @@ rewrite `/api/*` в `vercel.json`. Если развернуть прокси н
 | GET   | `/homework`                   | `homework/operations/list`                     |
 | GET   | `/homework/groups`            | `homework/settings/group-history`              |
 | GET   | `/homework/counts`            | `count/homework`                               |
+| POST  | `/homework/operations/create` | `homework/operations/create` (multipart)       |
+| POST  | `/homework/operations/delete` | `homework/operations/delete`                   |
 | GET   | `/payment`                    | `payment/operations/index`                     |
 | GET   | `/payment/history`            | `payment/operations/history`                   |
 | GET   | `/payment/schedule`           | `payment/operations/schedule`                  |
@@ -74,5 +76,7 @@ rewrite `/api/*` в `vercel.json`. Если развернуть прокси н
 | GET   | `/market`                     | `market/operations/{list,products,index}` + purchases |
 | POST  | `/market/buy`                 | `market/operations/{buy,purchase}`             |
 
-Записывающие операции Journal (создание обращений, отправка ДЗ) намеренно не проксируются,
-кроме покупки в маркете (`POST /market/buy`) — она идёт через ту же сессионную cookie.
+Записывающие операции Journal (создание обращений и т.п.) намеренно не проксируются,
+кроме покупки в маркете (`POST /market/buy`) и отправки/удаления ДЗ
+(`POST /homework/operations/create`, `POST /homework/operations/delete`) — они идут через
+ту же сессионную cookie.
