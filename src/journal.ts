@@ -14,6 +14,13 @@ const client = axios.create({
   },
 });
 
+client.interceptors.request.use((config) => {
+  if (typeof FormData !== "undefined" && config.data instanceof FormData)
+    config.headers.delete("Content-Type");
+
+  return config;
+});
+
 const toHttpError = (error: unknown): HttpError => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<{ message?: string }>;
