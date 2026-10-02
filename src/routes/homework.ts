@@ -23,7 +23,19 @@ const TYPES = new Set([0, 1]);
 homeworkRouter.get(
   "/counts",
   asyncRoute(async (req, res) => {
-    const raw = await journalRequest<unknown>(req, res, "/count/homework");
+    const groupId = Number(req.query.groupId);
+    const type = Number(req.query.type ?? 0);
+
+    if (!Number.isInteger(groupId) || groupId <= 0)
+      throw badRequest("groupId обязателен");
+
+    if (!TYPES.has(type))
+      throw badRequest("type должен быть 0 (ДЗ) или 1 (лабораторные)");
+
+    const raw = await journalRequest<unknown>(req, res, "/count/homework", {
+      method: "GET",
+      params: { type, group_id: groupId },
+    });
     res.json(Array.isArray(raw) ? raw : []);
   })
 );
