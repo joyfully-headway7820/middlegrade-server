@@ -5,6 +5,7 @@ import {
   EvaluateLessonQueueItem,
   EvaluateLessonSubmitBody,
 } from "../types";
+import { normalizeEvaluateComment } from "../utils/normalizeEvaluateComment";
 import { unwrapList } from "../utils/normalizeMarket";
 
 const isMark = (value: unknown): value is number =>
@@ -31,18 +32,16 @@ export const parseEvaluateLessonSubmitBody = (
     throw badRequest("mark_lesson должен быть целым числом от 1 до 5");
   }
 
-  const comment_teach =
-    typeof raw?.comment_teach === "string" ? raw.comment_teach : "";
-  const comment_lesson =
-    typeof raw?.comment_lesson === "string" ? raw.comment_lesson : "";
-
-  if (mark_teach <= 3 && !comment_teach.trim()) {
-    throw badRequest("comment_teach обязателен при оценке преподавателя 3 и ниже");
-  }
-
-  if (mark_lesson <= 3 && !comment_lesson.trim()) {
-    throw badRequest("comment_lesson обязателен при оценке занятия 3 и ниже");
-  }
+  const comment_teach = normalizeEvaluateComment(
+    typeof raw?.comment_teach === "string" ? raw.comment_teach : "",
+    mark_teach <= 3,
+    "comment_teach",
+  );
+  const comment_lesson = normalizeEvaluateComment(
+    typeof raw?.comment_lesson === "string" ? raw.comment_lesson : "",
+    mark_lesson <= 3,
+    "comment_lesson",
+  );
 
   return {
     key,
